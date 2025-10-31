@@ -31,12 +31,27 @@
 
 #define CONFIG_BLINK_PERIOD 1000
 
+/** @def timerPeriod_us
+* @brief Periodo del timer en [us]
+*/
+#define timerPeriod_us 1000000 
+
+/** @def CONTROL
+* @brief Booleano de control para detener o reanudar la medición
+*/
+bool CONTROL=true;
+
 /*==================[internal data definition]===============================*/
 
 typedef struct{
 		gpio_t pin; /// Nro de pin
 		io_t dir; /// lo establece como entrada/input (0) o salida/output (1)
-	}gpioConf_t;
+	} gpioConf_t;
+
+/** @def TaskHandle_t notifyControl_task_handle
+ *  @brief Handle de la tarea que notifica a controlDeDerrames
+ */
+TaskHandle_t notifyControl_task_handle = NULL;
 
 /** @def TaskHandle_t controlDeDerrames_task_handle
  *  @brief Handle de la tarea que controla la apertura/cerrado de la válvula
@@ -52,6 +67,20 @@ TaskHandle_t mideDistancia_task_handle = NULL;
  *  @brief Handle de la tarea que envía mensajes del estado por UART
  */
 TaskHandle_t UART_task_handle = NULL; 
+
+/** @def vector_LEDS
+* @brief Vector de LEDS (estructuras led_t)
+*/
+led_t vector_LEDS[3]={LED_1, LED_2, LED_3}; //vector de led_t
+
+timer_config_t timer_controlDeDerrames = { 
+
+	.timer = TIMER_A,
+	.period = timerPeriod_us,
+	.func_p = notifyControl,
+	.param_p = NULL,
+
+};
 
 /*==================[internal functions declaration]=========================*/
 
@@ -76,6 +105,72 @@ static void msjUART_task(void);
 
 /*==================[external functions definition]==========================*/
 
+static void mideDistancia_Task(void){
+
+	while (1) {
+
+		ulTaskNotifyTake(pdTRUE, portMAX_DELAY); 
+
+		if (CONTROL) {
+
+			uint16_t distancia=HcSr04ReadDistanceInCentimeters(); 
+		
+			if (distancia<=10) {
+
+				for (int i=0 ; i<3 ; i++) {
+					LedOff(vector_LEDS[i]);
+				}
+
+			} else if (10<distancia && distancia<=20) {
+
+				for (int i=1 ; i<3 ; i++) {
+					LedOff(vector_LEDS[i]);
+				}
+				LedOn(vector_LEDS[0]);
+
+			} else if (20<distancia && distancia<=30) {
+
+				for (int i=0 ; i<2 ; i++) {
+					LedOn(vector_LEDS[i]);
+				}
+				LedOff(vector_LEDS[2]);
+
+			} else { 
+
+				for (int i=0 ; i<3 ; i++) {
+					LedOn(vector_LEDS[i]);
+				}
+			}
+
+		}
+
+	}
+
+}
+
+static void controlDeDerrames_task (void) {
+
+    while (1) {
+        
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+
+        if (distancia==6) {
+
+//GPIO19 en cero
+
+        } else if (distancia>6 && distancia<30) {
+
+//GPIO19 en uno
+            
+        } else if (distancia==30) {
+
+//GPIO19 en cero
+
+        }
+
+    }
+
+}
 
 
 
