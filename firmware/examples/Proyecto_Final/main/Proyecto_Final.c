@@ -36,6 +36,7 @@
 #include "gpio_mcu.h"
 #include "hc_sr04.h"
 #include "uart_mcu.h"
+#include "timer_mcu.h"
 
 
 /*==================[macros and definitions]=================================*/
@@ -111,7 +112,7 @@ static void controlDeDerrames_task (void);
 * @brief Tarea que enciende los leds según la distancia medida 
 * @return void
 */
-static void mideDistancia_task(void);
+static void mideDistancia_task(void *pvParameter);
 
 
 /** @fn static void mideDistancia_Task(void)
@@ -119,7 +120,7 @@ static void mideDistancia_task(void);
 (al comienzo del programa, cuando se apaga manualmente o cuando detecta que se retira el recipiente), "cargando...", "fin de carga".
 * @return void
 */
-static void msjUART_task(void);
+static void msjUART_task(void *pvParameter);
 
 /*==================[external functions definition]==========================*/
 
@@ -134,23 +135,22 @@ static void msjUART_task(void *pvParameter){
 		ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 		if(control_OnOff){ /* = 1--> msj de cargando...,*/
 				UartSendString(UART_PC,"Cargando...");
-			if(1){ /*ver si usar otra variable de control o directamente hacer por comparación de la medida*/
-				UartSendString(UART_PC,-"Fin de la carga");
-				control_OnOff=!control_OnOff;
-				vTaskDelay(CONFIG_BLINK_PERIOD / portTICK_PERIOD_MS); /** cuanto tiempo? */
+			if(!control_estado){ /*ver si usar otra variable de control o directamente hacer por comparación de la medida*/
+				UartSendString(UART_PC,"Fin de la carga");
+				control_estado=3;
+			}else if(control_estado){
+				UartSendString(UART_PC, "Apagado");
+				control_estado=3;
 			}
 		} else if (!control_OnOff){
 			UartSendString(UART_PC, "Apagado");
 		}
-
-
-
-
 	}
 }
 
 
 static void mideDistancia_Task(void){
+static void mideDistancia_Task(void *pvParameter){
 
 	while (1) {
 
