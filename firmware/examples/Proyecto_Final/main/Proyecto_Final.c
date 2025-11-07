@@ -100,35 +100,19 @@ uint16_t distancia;
 /** @def void notifyDistancia(void* param)
  * @brief Función que notifica a mideDistancia_task
  */
-void notifyDistancia(void* param);
+//void notifyDistancia(void* param);
 
 /** @def void notifyControl(void* param)
  * @brief Función que notifica a controlDeDerrames_task
  */
-void notifyControl(void* param);
+//void notifyControl(void* param);
 
 /** @def vector_LEDS
 * @brief Vector de LEDS (estructuras led_t)
 */
 led_t vector_LEDS[3]={LED_1, LED_2, LED_3}; //vector de led_t
 
-timer_config_t timer_controlDeDerrames = { 
 
-	.timer = TIMER_A,
-	.period = timerPeriod_us,
-	.func_p = notifyControl,
-	.param_p = NULL,
-
-};
-
-timer_config_t timer_mideDistancia = { 
-
-	.timer = TIMER_B,
-	.period = timerPeriod_us,
-	.func_p = notifyDistancia,
-	.param_p = NULL,
-
-};
 
 gpioConf_t gpio5v = {GPIO_19, 1};
 
@@ -138,7 +122,7 @@ gpioConf_t gpio5v = {GPIO_19, 1};
 * @brief Tarea que previene derrames por retirada abrupta del recipiente o rebalse
 * @return void
 */
-static void controlDeDerrames_task (void);
+static void controlDeDerrames_task (void *pvParameter);
 
 /** @fn static void mideDistancia_task(void)
 * @brief Tarea que enciende los leds según la distancia medida 
@@ -162,19 +146,20 @@ void leer_tecla1(){
 
 
 void notifyDistancia(void* param){ 
-    vTaskNotifyGiveFromISR(mideDistancia_task, pdFALSE);  
+    vTaskNotifyGiveFromISR(mideDistancia_task_handle, pdFALSE);  
 }
 
 void notifyControl(void* param){ 
-    vTaskNotifyGiveFromISR(controlDeDerrames_task, pdFALSE);  
+    vTaskNotifyGiveFromISR(controlDeDerrames_task_handle, pdFALSE);  
 }
 
+/*
 
 static void msjUART_task(void *pvParameter){
 	while(true){
-		if(control_OnOff){ /* = 1--> msj de cargando...,*/
+		if(control_OnOff){ 
 				UartSendString(UART_PC,"Cargando...");
-			if(!control_estado){ /*ver si usar otra variable de control o directamente hacer por comparación de la medida*/
+			if(!control_estado){ 
 				UartSendString(UART_PC,"Fin de la carga");
 				control_estado=3;
 			}else if(control_estado){
@@ -189,12 +174,12 @@ static void msjUART_task(void *pvParameter){
 	}
 }
 
+*/
 
 static void mideDistancia_task(void *pvParameter){
 
 	while (1) {
 
-		ulTaskNotifyTake(pdTRUE, portMAX_DELAY); 
 
 		if (control_OnOff) {
 
@@ -206,14 +191,14 @@ static void mideDistancia_task(void *pvParameter){
 					LedOff(vector_LEDS[i]);
 				}
 
-			} else if (10<distancia && distancia<=20) {
+			} else if ((10<distancia) && (distancia<=20)) {
 
 				for (int i=1 ; i<3 ; i++) {
 					LedOff(vector_LEDS[i]);
 				}
 				LedOn(vector_LEDS[0]);
 
-			} else if (20<distancia && distancia<=30) {
+			} else if ((20<distancia) && (distancia<=30)) {
 
 				for (int i=0 ; i<2 ; i++) {
 					LedOn(vector_LEDS[i]);
@@ -228,12 +213,16 @@ static void mideDistancia_task(void *pvParameter){
 			}
 
 		}
+	
+		vTaskDelay(CONFIG_BLINK_PERIOD / portTICK_PERIOD_MS);
 
 	}
 
 }
 
-static void controlDeDerrames_task (void) {
+
+/*
+static void controlDeDerrames_task (void *pvParameter) {
 
     while (1) {
         
@@ -266,8 +255,7 @@ static void controlDeDerrames_task (void) {
     }
 
 }
-
-
+	*/
 
 void app_main(void){
 
@@ -283,13 +271,35 @@ void app_main(void){
 	};
 	UartInit(&my_uart);
 
-	
+
+	HcSr04Init(GPIO_3, GPIO_2);
+	LedsInit();
     GPIOInit(gpio5v.pin, gpio5v.dir);
 
-	xTaskCreate(&msjUART_task, "", 2048, NULL, 5, &UART_task_handle);
-	xTaskCreate(&mideDistancia_task, "", 2048, NULL, 5, &mideDistancia_task_handle);
-	xTaskCreate(&controlDeDerrames_task, "", 2048, NULL, 5, &controlDeDerrames_task_handle);
+/*	xTaskCreate(&msjUART_task, "", 4096, NULL, 5, &UART_task_handle);
+*/
+	xTaskCreate(&mideDistancia_task, "", 4096, NULL, 5, &mideDistancia_task_handle);
+/*	xTaskCreate(&controlDeDerrames_task, "", 4096, NULL, 5, &controlDeDerrames_task_handle);
+*/
 
+
+	timer_config_t timer_controlDeDerrames = { 
+
+		.timer = TIMER_A,
+		.period = timerPeriod_us,
+		.func_p = notifyControl,
+		.param_p = NULL,
+
+	};
+
+	timer_config_t timer_mideDistancia = { 
+
+		.timer = TIMER_B,
+		.period = timerPeriod_us,
+		.func_p = notifyDistancia,
+		.param_p = NULL,
+
+	};
 
 	TimerStart(timer_controlDeDerrames.timer);
 	TimerStart(timer_mideDistancia.timer);
