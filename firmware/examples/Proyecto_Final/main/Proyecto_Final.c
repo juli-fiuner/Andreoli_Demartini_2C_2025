@@ -15,9 +15,9 @@
  * 
  * |     Relé       |   EDU-ESP   	|
  * |:--------------:|:--------------|
- * | 	TRIGGER 	| 	GPIO_19		|
- * | 	+5V 	 	| 	+5V 		|
- * | 	GND 	 	| 	GND     	|
+ * | 	TRIGGER (S) | 	GPIO_19		|
+ * |    	+ 	 	| 	+5V 		|
+ * | 		-   	| 	GND     	|
  *
  * @author Demartini Paula (paula.demartini@ingenieria.uner.edu.ar)
  * @author Andreoli Aguilar Julieta (julieta.andreoli@ingenieria.uner.edu.ar)
@@ -47,6 +47,16 @@
 * @brief Periodo del timer en [us]
 */
 #define timerPeriod_us 1000000 
+
+/** @def distanciaGround_cm
+* @brief Distancia a la mesa desde la electroválvula en [cm]
+*/
+#define distanciaGround_cm 30 
+
+/** @def distanciaLimite_cm
+* @brief Distancia al nivel de agua máximo en [cm]
+*/
+#define distanciaLimite_cm 6 
 
 /*==================[internal data definition]===============================*/
 
@@ -221,6 +231,9 @@ static void controlDeDerrames_task (void) {
 			if (distancia==6) {
 
 			GPIOOff(gpio5v.pin);	//GPIO19 en cero
+        if (distancia==distanciaLimite_cm) {
+
+			GPIOOff(gpio5v.pin);
 			control_estado=0;
 		
 		} else if (distancia>6 && distancia<30) {
@@ -230,6 +243,16 @@ static void controlDeDerrames_task (void) {
 		} else if (distancia==30) {
 
 			GPIOOff(gpio5v.pin);	//GPIO19 en cero
+        } else if (distancia>distanciaLimite_cm && distancia<distanciaGround_cm) {
+
+			GPIOOn(gpio5v.pin);
+			
+
+//GPIO19 en uno
+            
+        } else if (distancia==distanciaGround_cm) {
+
+			GPIOOff(gpio5v.pin);
 			control_estado=1;
 
 		}
