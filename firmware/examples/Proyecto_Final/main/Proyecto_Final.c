@@ -65,10 +65,6 @@ typedef struct{
 		io_t dir; /// lo establece como entrada/input (0) o salida/output (1)
 	} gpioConf_t;
 
-/** @def TaskHandle_t notifyControl_task_handle
- *  @brief Handle de la tarea que notifica a controlDeDerrames
- */
-TaskHandle_t notifyControl_task_handle = NULL;
 
 /** @def TaskHandle_t controlDeDerrames_task_handle
  *  @brief Handle de la tarea que controla la apertura/cerrado de la válvula
@@ -96,6 +92,21 @@ uint8_t control_OnOff=0;
  */
 uint8_t control_estado=3;
 
+/** @def uint8_t distancia
+ * @brief Variable que guarda la distancia medida
+ */
+uint16_t distancia;
+
+/** @def void notifyDistancia(void* param)
+ * @brief Función que notifica a mideDistancia_task
+ */
+void notifyDistancia(void* param);
+
+/** @def void notifyControl(void* param)
+ * @brief Función que notifica a controlDeDerrames_task
+ */
+void notifyControl(void* param);
+
 /** @def vector_LEDS
 * @brief Vector de LEDS (estructuras led_t)
 */
@@ -110,8 +121,6 @@ timer_config_t timer_controlDeDerrames = {
 
 };
 
-
-
 timer_config_t timer_mideDistancia = { 
 
 	.timer = TIMER_B,
@@ -120,6 +129,8 @@ timer_config_t timer_mideDistancia = {
 	.param_p = NULL,
 
 };
+
+gpioConf_t gpio5v = {GPIO_19, 1};
 
 /*==================[internal functions declaration]=========================*/
 
@@ -179,7 +190,7 @@ static void msjUART_task(void *pvParameter){
 }
 
 
-static void mideDistancia_Task(void *pvParameter){
+static void mideDistancia_task(void *pvParameter){
 
 	while (1) {
 
@@ -187,7 +198,7 @@ static void mideDistancia_Task(void *pvParameter){
 
 		if (control_OnOff) {
 
-			uint16_t distancia=HcSr04ReadDistanceInCentimeters(); 
+			distancia=HcSr04ReadDistanceInCentimeters(); 
 		
 			if (distancia<=10) {
 
@@ -227,37 +238,28 @@ static void controlDeDerrames_task (void) {
     while (1) {
         
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-		if(control_OnOff){
-			if (distancia==6) {
+		if (control_OnOff) {
 
-			GPIOOff(gpio5v.pin);	//GPIO19 en cero
-        if (distancia==distanciaLimite_cm) {
+			if (distancia==distanciaLimite_cm || distancia<distanciaLimite_cm) {
 
-			GPIOOff(gpio5v.pin);
-			control_estado=0;
-		
-		} else if (distancia>6 && distancia<30) {
+				GPIOOff(gpio5v.pin);
+				control_estado=0;
 
-			GPIOOn(gpio5v.pin);	//GPIO19 en uno		
-				
-		} else if (distancia==30) {
+			} else if (distancia>distanciaLimite_cm && distancia<distanciaGround_cm) {
 
-			GPIOOff(gpio5v.pin);	//GPIO19 en cero
-        } else if (distancia>distanciaLimite_cm && distancia<distanciaGround_cm) {
-
-			GPIOOn(gpio5v.pin);
-			
-
-//GPIO19 en uno
+				GPIOOn(gpio5v.pin);
             
-        } else if (distancia==distanciaGround_cm) {
+			} else if (distancia==distanciaGround_cm) {
 
-			GPIOOff(gpio5v.pin);
-			control_estado=1;
+				GPIOOff(gpio5v.pin);
+				control_estado=1;
 
-		}
-		}else if(control_OnOff){
-			GPIOOff(gpio5v.pin);	//GPIO19 en cero
+			}
+
+		} else if (!control_OnOff) {
+
+				GPIOOff(gpio5v.pin);	//GPIO19 en cero
+
 		}
 
 
@@ -282,11 +284,10 @@ void app_main(void){
 	UartInit(&my_uart);
 
 	
-    gpioConf_t gpio5v = {GPIO_19, 1};
     GPIOInit(gpio5v.pin, gpio5v.dir);
 
 	xTaskCreate(&msjUART_task, "", 2048, NULL, 5, &UART_task_handle);
-	xTaskCreate(&mideDistancia_Task, "", 2048, NULL, 5, &mideDistancia_task_handle);
+	xTaskCreate(&mideDistancia_task, "", 2048, NULL, 5, &mideDistancia_task_handle);
 	xTaskCreate(&controlDeDerrames_task, "", 2048, NULL, 5, &controlDeDerrames_task_handle);
 
 
