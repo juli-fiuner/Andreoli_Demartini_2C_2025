@@ -41,7 +41,7 @@
 
 /*==================[macros and definitions]=================================*/
 
-#define CONFIG_BLINK_PERIOD 1000
+#define CONFIG_BLINK_PERIOD 100
 
 /** @def timerPeriod_us
 * @brief Periodo del timer en [us]
@@ -153,7 +153,6 @@ void notifyControl(void* param){
     vTaskNotifyGiveFromISR(controlDeDerrames_task_handle, pdFALSE);  
 }
 
-/*
 
 static void msjUART_task(void *pvParameter){
 	while(true){
@@ -174,7 +173,6 @@ static void msjUART_task(void *pvParameter){
 	}
 }
 
-*/
 
 static void mideDistancia_task(void *pvParameter){
 
@@ -184,40 +182,35 @@ static void mideDistancia_task(void *pvParameter){
 		if (control_OnOff) {
 
 			distancia=HcSr04ReadDistanceInCentimeters(); 
+		            if (distancia<10){
+                LedOff(LED_1);
+                LedOff(LED_2);
+                LedOff(LED_3);
+
+            } else if (distancia<20){
+                LedOn(LED_1);
+                LedOff(LED_2);
+                LedOff(LED_3);
+            }else if(distancia<30){
+                LedOn(LED_1);
+                LedOn(LED_2);
+                LedOff(LED_3);
+
+            }else{
+                LedOn(LED_1);
+                LedOn(LED_2);
+                LedOn(LED_3);
+                
+            }
+
 		
-			if (distancia<=10) {
-
-				for (int i=0 ; i<3 ; i++) {
-					LedOff(vector_LEDS[i]);
-				}
-
-			} else if ((10<distancia) && (distancia<=20)) {
-
-				for (int i=1 ; i<3 ; i++) {
-					LedOff(vector_LEDS[i]);
-				}
-				LedOn(vector_LEDS[0]);
-
-			} else if ((20<distancia) && (distancia<=30)) {
-
-				for (int i=0 ; i<2 ; i++) {
-					LedOn(vector_LEDS[i]);
-				}
-				LedOff(vector_LEDS[2]);
-
-			} else { 
-
-				for (int i=0 ; i<3 ; i++) {
-					LedOn(vector_LEDS[i]);
-				}
-			}
-
-		}
 	
 		vTaskDelay(CONFIG_BLINK_PERIOD / portTICK_PERIOD_MS);
 
+
 	}
 
+}
 }
 
 
@@ -276,42 +269,28 @@ void app_main(void){
 	LedsInit();
     GPIOInit(gpio5v.pin, gpio5v.dir);
 
-/*	xTaskCreate(&msjUART_task, "", 4096, NULL, 5, &UART_task_handle);
-*/
+	xTaskCreate(&msjUART_task, "", 4096, NULL, 5, &UART_task_handle);
 	xTaskCreate(&mideDistancia_task, "", 4096, NULL, 5, &mideDistancia_task_handle);
 /*	xTaskCreate(&controlDeDerrames_task, "", 4096, NULL, 5, &controlDeDerrames_task_handle);
 */
 
 
-	timer_config_t timer_controlDeDerrames = { 
+//	timer_config_t timer_controlDeDerrames = { 
+//
+//		.timer = TIMER_A,
+//		.period = timerPeriod_us,
+//		.func_p = notifyControl,
+//		.param_p = NULL,
+//
+//	};
+//	TimerInit(&timer_controlDeDerrames);
 
-		.timer = TIMER_A,
-		.period = timerPeriod_us,
-		.func_p = notifyControl,
-		.param_p = NULL,
+//	TimerStart(timer_controlDeDerrames.timer);
 
-	};
-
-	timer_config_t timer_mideDistancia = { 
-
-		.timer = TIMER_B,
-		.period = timerPeriod_us,
-		.func_p = notifyDistancia,
-		.param_p = NULL,
-
-	};
-
-	TimerStart(timer_controlDeDerrames.timer);
-	TimerStart(timer_mideDistancia.timer);
 
 
 	
-    while(1) {
-/* Prueba en clase 31/10
-    	GPIOToggle(gpio5v.pin);
-		vTaskDelay(CONFIG_BLINK_PERIOD / portTICK_PERIOD_MS);
-*/
-    }
+
 }
 
 /*==================[end of file]============================================*/
