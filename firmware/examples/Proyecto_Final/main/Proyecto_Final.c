@@ -214,7 +214,6 @@ static void mideDistancia_task(void *pvParameter){
 }
 
 
-/*
 static void controlDeDerrames_task (void *pvParameter) {
 
     while (1) {
@@ -248,7 +247,7 @@ static void controlDeDerrames_task (void *pvParameter) {
     }
 
 }
-	*/
+
 
 void app_main(void){
 
@@ -271,21 +270,21 @@ void app_main(void){
 
 	xTaskCreate(&msjUART_task, "", 4096, NULL, 5, &UART_task_handle);
 	xTaskCreate(&mideDistancia_task, "", 4096, NULL, 5, &mideDistancia_task_handle);
-/*	xTaskCreate(&controlDeDerrames_task, "", 4096, NULL, 5, &controlDeDerrames_task_handle);
-*/
+	xTaskCreate(&controlDeDerrames_task, "", 4096, NULL, 5, &controlDeDerrames_task_handle);
 
 
-//	timer_config_t timer_controlDeDerrames = { 
-//
-//		.timer = TIMER_A,
-//		.period = timerPeriod_us,
-//		.func_p = notifyControl,
-//		.param_p = NULL,
-//
-//	};
-//	TimerInit(&timer_controlDeDerrames);
 
-//	TimerStart(timer_controlDeDerrames.timer);
+	timer_config_t timer_controlDeDerrames = { 
+
+		.timer = TIMER_A,
+		.period = timerPeriod_us,
+		.func_p = notifyControl,
+		.param_p = NULL,
+
+	};
+	TimerInit(&timer_controlDeDerrames);
+
+	TimerStart(timer_controlDeDerrames.timer);
 
 
 
