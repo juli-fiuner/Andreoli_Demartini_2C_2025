@@ -6,9 +6,18 @@
  *
  * @section changelog Changelog
  *
- * |   Date	    | Description                                    |
- * |:----------:|:-----------------------------------------------|
- * | 02/04/2024 | Document creation		                         |
+ * |    HC-SR04     |   EDU-ESP   	|
+ * |:--------------:|:--------------|
+ * | 	ECHO 	 	| 	GPIO_3		|
+ * | 	TRIGGER	 	| 	GPIO_2		|
+ * | 	+5V 	 	| 	+5V 		|
+ * | 	GND 	 	| 	GND     	|
+ * 
+ * |     Relé       |   EDU-ESP   	|
+ * |:--------------:|:--------------|
+ * | 	TRIGGER 	| 	GPIO_19		|
+ * | 	+5V 	 	| 	+5V 		|
+ * | 	GND 	 	| 	GND     	|
  *
  * @author Demartini Paula (paula.demartini@ingenieria.uner.edu.ar)
  * @author Andreoli Aguilar Julieta (julieta.andreoli@ingenieria.uner.edu.ar)
@@ -38,11 +47,6 @@
 */
 #define timerPeriod_us 1000000 
 
-/** @def CONTROL
-* @brief Booleano de control para detener o reanudar la medición
-*/
-bool CONTROL=true;
-
 /*==================[internal data definition]===============================*/
 
 typedef struct{
@@ -70,12 +74,17 @@ TaskHandle_t mideDistancia_task_handle = NULL;
  */
 TaskHandle_t UART_task_handle = NULL; 
 
-<<<<<<< HEAD
 /** @def uint8_t control_OnOff
  * @brief si es 0 --> apagado; si es 1 --> encendido. Controlado por SWITCH_1 y la lógica de cotrol de derrames.
  */
 uint8_t control_OnOff=0;
-=======
+
+/** @def uint8_t control_estado
+ * @brief Variable que informa a la UART el estado de carga una vez encendido el sistema: 
+ * si es 0 --> llegó al nivel deseado; si es 1 --> retirada abrupta. 
+ */
+uint8_t control_estado=3;
+
 /** @def vector_LEDS
 * @brief Vector de LEDS (estructuras led_t)
 */
@@ -89,7 +98,6 @@ timer_config_t timer_controlDeDerrames = {
 	.param_p = NULL,
 
 };
->>>>>>> 08f45f41e70338c91077e9322e81191ad854b95f
 
 /*==================[internal functions declaration]=========================*/
 
@@ -115,7 +123,6 @@ static void msjUART_task(void);
 
 /*==================[external functions definition]==========================*/
 
-<<<<<<< HEAD
 void leer_tecla1(){
 	control_OnOff=!control_OnOff;
 }
@@ -143,14 +150,13 @@ static void msjUART_task(void *pvParameter){
 }
 
 
-=======
 static void mideDistancia_Task(void){
 
 	while (1) {
 
 		ulTaskNotifyTake(pdTRUE, portMAX_DELAY); 
 
-		if (CONTROL) {
+		if (control_OnOff) {
 
 			uint16_t distancia=HcSr04ReadDistanceInCentimeters(); 
 		
@@ -195,13 +201,23 @@ static void controlDeDerrames_task (void) {
 
         if (distancia==6) {
 
+			GPIOOff(gpio5v.pin);
+			control_estado=0;
+
 //GPIO19 en cero
 
         } else if (distancia>6 && distancia<30) {
 
+			GPIOOn(gpio5v.pin);
+			
+
 //GPIO19 en uno
             
         } else if (distancia==30) {
+
+			GPIOOff(gpio5v.pin);
+			control_estado=1;
+
 
 //GPIO19 en cero
 
@@ -210,7 +226,6 @@ static void controlDeDerrames_task (void) {
     }
 
 }
->>>>>>> 08f45f41e70338c91077e9322e81191ad854b95f
 
 
 
