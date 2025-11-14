@@ -38,6 +38,7 @@
 #include "uart_mcu.h"
 #include "timer_mcu.h"
 
+
 /*==================[macros and definitions]=================================*/
 
 #define CONFIG_BLINK_PERIOD 100
@@ -45,7 +46,7 @@
 /** @def timerPeriod_us
 * @brief Periodo del timer en [us]
 */
-#define timerPeriod_us 100000 
+#define timerPeriod_us 1000000 
 
 /** @def distanciaGround_cm
 * @brief Distancia a la mesa desde la electroválvula en [cm]
@@ -63,12 +64,17 @@ typedef struct{
 		gpio_t pin; /// Nro de pin
 		io_t dir; /// lo establece como entrada/input (0) o salida/output (1)
 	} gpioConf_t;
-    gpioConf_t gpio5v = {GPIO_19, 1};
+
 
 /** @def TaskHandle_t controlDeDerrames_task_handle
  *  @brief Handle de la tarea que controla la apertura/cerrado de la válvula
  */
 TaskHandle_t controlDeDerrames_task_handle = NULL; 
+
+/** @def TaskHandle_t mideDistancia_task_handle
+ *  @brief Handle de la tarea que mide la distancia a través del sensor
+ */
+TaskHandle_t mideDistancia_task_handle = NULL; 
 
 /** @def TaskHandle_t UART_task_handle
  *  @brief Handle de la tarea que envía mensajes del estado por UART
@@ -91,6 +97,23 @@ uint8_t control_estado=3;
  */
 uint16_t distancia;
 
+/** @def void notifyDistancia(void* param)
+ * @brief Función que notifica a mideDistancia_task
+ */
+//void notifyDistancia(void* param);
+
+/** @def void notifyControl(void* param)
+ * @brief Función que notifica a controlDeDerrames_task
+ */
+//void notifyControl(void* param);
+
+/** @def vector_LEDS
+* @brief Vector de LEDS (estructuras led_t)
+*/
+led_t vector_LEDS[3]={LED_1, LED_2, LED_3}; //vector de led_t
+
+gpioConf_t gpio5v = {GPIO_19, 1};
+
 /*==================[internal functions declaration]=========================*/
 
 /** @fn static void controlDeDerrames_task (void)
@@ -98,6 +121,12 @@ uint16_t distancia;
 * @return void
 */
 static void controlDeDerrames_task (void *pvParameter);
+
+/** @fn static void mideDistancia_task(void)
+* @brief Tarea que enciende los leds según la distancia medida 
+* @return void
+*/
+static void mideDistancia_task(void *pvParameter);
 
 
 /** @fn static void mideDistancia_Task(void)
@@ -108,6 +137,19 @@ static void controlDeDerrames_task (void *pvParameter);
 static void msjUART_task(void *pvParameter);
 
 /*==================[external functions definition]==========================*/
+
+void leer_tecla1(){
+	control_OnOff=!control_OnOff;
+}
+
+
+void notifyDistancia(void* param){ 
+    vTaskNotifyGiveFromISR(mideDistancia_task_handle, pdFALSE);  
+}
+
+void notifyControl(void* param){ 
+    vTaskNotifyGiveFromISR(controlDeDerrames_task_handle, pdFALSE);  
+}
 
 
 static void msjUART_task(void *pvParameter){
@@ -131,72 +173,82 @@ static void msjUART_task(void *pvParameter){
 }
 
 
+static void mideDistancia_task(void *pvParameter){
+
+	while (1) {
+
+		if (control_OnOff) {
+
+			distancia=HcSr04ReadDistanceInCentimeters(); 
+		            if (distancia<10){
+                LedsOffAll();
+
+            } else if (distancia<20){
+                LedOn(LED_1);
+                LedOff(LED_2);
+                LedOff(LED_3);
+
+            }else if(distancia<30){
+                LedOn(LED_1);
+                LedOn(LED_2);
+                LedOff(LED_3);
+
+            }else{
+                LedOn(LED_1);
+                LedOn(LED_2);
+                LedOn(LED_3);
+                
+            }		
+	
+		vTaskDelay(CONFIG_BLINK_PERIOD / portTICK_PERIOD_MS);
+
+
+	}
+
+}
+}
+
+
 static void controlDeDerrames_task (void *pvParameter) {
 
     while (1) {
         
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-
 		if (control_OnOff) {
 
-			distancia=HcSr04ReadDistanceInCentimeters(); 
-			if (distancia<distanciaLimite_cm){
-                LedOn(LED_1);
-                LedOn(LED_2);
-                LedOn(LED_3);
-				GPIOOn(gpio5v.pin);
+			if (distancia==distanciaLimite_cm || distancia<distanciaLimite_cm) {
+
+				GPIOOff(gpio5v.pin);
 				control_estado=0;
-				control_OnOff=0;
 
+			} else if (distancia>distanciaLimite_cm && distancia<distanciaGround_cm) {
 
+				GPIOOn(gpio5v.pin);
+            
+			} else if (distancia==distanciaGround_cm) {
 
-            } else if (distancia<15){
-                LedOff(LED_1);
-                LedOn(LED_2);
-                LedOn(LED_3);
 				GPIOOff(gpio5v.pin);
-
-
-            }else if(distancia<distanciaGround_cm){
-                LedOff(LED_1);
-                LedOff(LED_2);
-                LedOn(LED_3);
-				GPIOOff(gpio5v.pin);
-
-
-            }else{
-                LedsOffAll();
-				GPIOOn(gpio5v.pin);	//GPIO19 en cero
 				control_estado=1;
-				control_OnOff=0;
-                
-            }		
-	
 
-	}
+			}
+
+		} else if (!control_OnOff) {
+
+				GPIOOff(gpio5v.pin);	//GPIO19 en cero
+
+		}
+
 
     }
-}
 
-
-void leer_tecla1(){
-	control_OnOff=!control_OnOff;
-}
-
-void notifyControl(void* param){ 
-    vTaskNotifyGiveFromISR(controlDeDerrames_task_handle, pdFALSE);  
 }
 
 
 void app_main(void){
 
-    SwitchesInit();
+/*Para los mensajes de estado de la UART */
+	SwitchesInit();
 	SwitchActivInt(SWITCH_1, leer_tecla1, NULL); /* para el encendido/apagado */
-
-    HcSr04Init(GPIO_3, GPIO_2);
-	LedsInit();
-    GPIOInit(gpio5v.pin, gpio5v.dir);
-
 	serial_config_t my_uart={
 		.port=UART_PC,
 		.baud_rate = 9600,
@@ -205,7 +257,7 @@ void app_main(void){
 	};
 	UartInit(&my_uart);
 
-    timer_config_t timer_controlDeDerrames = { 
+		timer_config_t timer_controlDeDerrames = { 
 
 		.timer = TIMER_A,
 		.period = timerPeriod_us,
@@ -213,12 +265,22 @@ void app_main(void){
 		.param_p = NULL,
 
 	};
+
+	HcSr04Init(GPIO_3, GPIO_2);
+	LedsInit();
+    GPIOInit(gpio5v.pin, gpio5v.dir);
 	TimerInit(&timer_controlDeDerrames);
 
-	xTaskCreate(&controlDeDerrames_task, "", 4096, NULL, 5, &controlDeDerrames_task_handle);
+	//Creación de tareas
+
 	xTaskCreate(&msjUART_task, "", 4096, NULL, 5, &UART_task_handle);
+	xTaskCreate(&mideDistancia_task, "", 4096, NULL, 5, &mideDistancia_task_handle);
+	xTaskCreate(&controlDeDerrames_task, "", 4096, NULL, 5, &controlDeDerrames_task_handle);
+
+
 
 	TimerStart(timer_controlDeDerrames.timer);
 
-
 }
+
+/*==================[end of file]============================================*/
