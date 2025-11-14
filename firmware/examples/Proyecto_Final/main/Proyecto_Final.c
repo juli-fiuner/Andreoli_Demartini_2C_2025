@@ -1,4 +1,4 @@
-/*! @mainpage Ejemplo Bluetooth - FFT
+/*! @mainpage Proyecto Final de Andreoli Aguilar y Demartini
  *
  * @section genDesc General Description
  *
