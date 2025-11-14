@@ -38,7 +38,6 @@
 #include "uart_mcu.h"
 #include "timer_mcu.h"
 
-
 /*==================[macros and definitions]=================================*/
 
 #define CONFIG_BLINK_PERIOD 100
@@ -64,22 +63,12 @@ typedef struct{
 		gpio_t pin; /// Nro de pin
 		io_t dir; /// lo establece como entrada/input (0) o salida/output (1)
 	} gpioConf_t;
-
+    gpioConf_t gpio5v = {GPIO_19, 1};
 
 /** @def TaskHandle_t controlDeDerrames_task_handle
  *  @brief Handle de la tarea que controla la apertura/cerrado de la válvula
  */
 TaskHandle_t controlDeDerrames_task_handle = NULL; 
-
-/** @def TaskHandle_t mideDistancia_task_handle
- *  @brief Handle de la tarea que mide la distancia a través del sensor
- */
-TaskHandle_t mideDistancia_task_handle = NULL; 
-
-/** @def TaskHandle_t UART_task_handle
- *  @brief Handle de la tarea que envía mensajes del estado por UART
- */
-TaskHandle_t UART_task_handle = NULL; 
 
 /** @def uint8_t control_OnOff
  * @brief si es 0 --> apagado; si es 1 --> encendido. Controlado por SWITCH_1 y la lógica de cotrol de derrames.
@@ -97,22 +86,7 @@ uint8_t control_estado=3;
  */
 uint16_t distancia;
 
-/** @def void notifyDistancia(void* param)
- * @brief Función que notifica a mideDistancia_task
- */
-//void notifyDistancia(void* param);
 
-/** @def void notifyControl(void* param)
- * @brief Función que notifica a controlDeDerrames_task
- */
-//void notifyControl(void* param);
-
-/** @def vector_LEDS
-* @brief Vector de LEDS (estructuras led_t)
-*/
-led_t vector_LEDS[3]={LED_1, LED_2, LED_3}; //vector de led_t
-
-gpioConf_t gpio5v = {GPIO_19, 1};
 
 /*==================[internal functions declaration]=========================*/
 
@@ -120,64 +94,17 @@ gpioConf_t gpio5v = {GPIO_19, 1};
 * @brief Tarea que previene derrames por retirada abrupta del recipiente o rebalse
 * @return void
 */
-static void controlDeDerrames_task (void *pvParameter);
-
-/** @fn static void mideDistancia_task(void)
-* @brief Tarea que enciende los leds según la distancia medida 
-* @return void
-*/
-static void mideDistancia_task(void *pvParameter);
-
-
-/** @fn static void mideDistancia_Task(void)
-* @brief Tarea que envía mensajes por UART, los posibles mensajes son: "apagado" 
-(al comienzo del programa, cuando se apaga manualmente o cuando detecta que se retira el recipiente), "cargando...", "fin de carga".
-* @return void
-*/
-static void msjUART_task(void *pvParameter);
 
 /*==================[external functions definition]==========================*/
 
-void leer_tecla1(){
-	control_OnOff=!control_OnOff;
-}
+static void controlDeDerrames_task (void *pvParameter) {
 
-
-void notifyDistancia(void* param){ 
-    vTaskNotifyGiveFromISR(mideDistancia_task_handle, pdFALSE);  
-}
-
-void notifyControl(void* param){ 
-    vTaskNotifyGiveFromISR(controlDeDerrames_task_handle, pdFALSE);  
-}
-
-
-static void msjUART_task(void *pvParameter){
-	while(true){
-		if(control_OnOff){ 
-				UartSendString(UART_PC,"Cargando...");
-			if(!control_estado){ 
-				UartSendString(UART_PC,"Fin de la carga");
-				control_estado=3;
-			}else if(control_estado){
-				UartSendString(UART_PC, "Apagado");
-				control_estado=3;
-			}
-		} else if (!control_OnOff){
-			UartSendString(UART_PC, "Apagado");
-		}
-
-	vTaskDelay(CONFIG_BLINK_PERIOD / portTICK_PERIOD_MS);
-	
-	}
-}
-
-
-static void mideDistancia_task(void *pvParameter){
-
-	while (1) {
+    while (1) {
+        
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
 		if (control_OnOff) {
+			printf("%d",control_OnOff);
 
 			distancia=HcSr04ReadDistanceInCentimeters(); 
 		            if (distancia<10){
@@ -200,23 +127,8 @@ static void mideDistancia_task(void *pvParameter){
                 
             }		
 	
-		vTaskDelay(CONFIG_BLINK_PERIOD / portTICK_PERIOD_MS);
 
-
-	}
-
-}
-}
-
-
-static void controlDeDerrames_task (void *pvParameter) {
-
-    while (1) {
-        
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-		if (control_OnOff) {
-
-			if (distancia==distanciaLimite_cm || distancia<distanciaLimite_cm) {
+			if (distancia<=distanciaLimite_cm) {
 
 				GPIOOff(gpio5v.pin);
 				control_estado=0;
@@ -225,7 +137,7 @@ static void controlDeDerrames_task (void *pvParameter) {
 
 				GPIOOn(gpio5v.pin);
             
-			} else if (distancia==distanciaGround_cm) {
+			} else if (distancia>=distanciaGround_cm) {
 
 				GPIOOff(gpio5v.pin);
 				control_estado=1;
@@ -239,25 +151,38 @@ static void controlDeDerrames_task (void *pvParameter) {
 		}
 
 
+
+	}
+
     }
 
+
+
+void leer_tecla1(){
+	control_OnOff=!control_OnOff;
+}
+
+void notifyControl(void* param){ 
+    vTaskNotifyGiveFromISR(controlDeDerrames_task_handle, pdFALSE);  
 }
 
 
 void app_main(void){
 
-/*Para los mensajes de estado de la UART */
-	SwitchesInit();
+    SwitchesInit();
 	SwitchActivInt(SWITCH_1, leer_tecla1, NULL); /* para el encendido/apagado */
-	serial_config_t my_uart={
-		.port=UART_PC,
-		.baud_rate = 9600,
-		.func_p= NULL, /* cambiar si decidimos que el encendido se haga por uart */
-		.param_p=NULL	
-	};
-	UartInit(&my_uart);
 
-		timer_config_t timer_controlDeDerrames = { 
+    HcSr04Init(GPIO_3, GPIO_2);
+	LedsInit();
+    GPIOInit(gpio5v.pin, gpio5v.dir);
+
+	xTaskCreate(&controlDeDerrames_task, "", 4096, NULL, 5, &controlDeDerrames_task_handle);
+
+
+
+
+
+    timer_config_t timer_controlDeDerrames = { 
 
 		.timer = TIMER_A,
 		.period = timerPeriod_us,
@@ -265,22 +190,9 @@ void app_main(void){
 		.param_p = NULL,
 
 	};
-
-	HcSr04Init(GPIO_3, GPIO_2);
-	LedsInit();
-    GPIOInit(gpio5v.pin, gpio5v.dir);
 	TimerInit(&timer_controlDeDerrames);
-
-	//Creación de tareas
-
-	xTaskCreate(&msjUART_task, "", 4096, NULL, 5, &UART_task_handle);
-	xTaskCreate(&mideDistancia_task, "", 4096, NULL, 5, &mideDistancia_task_handle);
-	xTaskCreate(&controlDeDerrames_task, "", 4096, NULL, 5, &controlDeDerrames_task_handle);
-
-
 
 	TimerStart(timer_controlDeDerrames.timer);
 
-}
 
-/*==================[end of file]============================================*/
+}
