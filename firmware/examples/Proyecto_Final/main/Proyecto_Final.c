@@ -40,22 +40,22 @@
 
 /*==================[macros and definitions]=================================*/
 
-#define CONFIG_BLINK_PERIOD 100
+#define CONFIG_BLINK_PERIOD 1000
 
 /** @def timerPeriod_us
 * @brief Periodo del timer en [us]
 */
-#define timerPeriod_us 100000 
+#define timerPeriod_us 50000 
 
 /** @def distanciaGround_cm
 * @brief Distancia a la mesa desde la electroválvula en [cm]
 */
-#define distanciaGround_cm 30 
+#define distanciaGround_cm 30
 
 /** @def distanciaLimite_cm
 * @brief Distancia al nivel de agua máximo en [cm]
 */
-#define distanciaLimite_cm 6 
+#define distanciaLimite_cm 10
 
 /*==================[internal data definition]===============================*/
 
@@ -103,6 +103,15 @@ static void controlDeDerrames_task (void *pvParameter);
 /** @fn static void mideDistancia_Task(void)
 * @brief Tarea que envía mensajes por UART, los posibles mensajes son: "apagado" 
 (al comienzo del programa, cuando se apaga manualmente o cuando detecta que se retira el recipiente), "cargando...", "fin de carga".
+
+control_OnOff = 1, variable control 3 --> cargando
+
+control_OnOff = 1, variable control 0 --> fin de carga
+
+control_OnOff = 1, variable control 1 --> has retirado el recipiente
+
+control_OnOff = 0, apagado
+
 * @return void
 */
 static void msjUART_task(void *pvParameter);
@@ -113,20 +122,21 @@ static void msjUART_task(void *pvParameter);
 static void msjUART_task(void *pvParameter){
 	while(true){
 		if(control_OnOff){ 
-				UartSendString(UART_PC,"Cargando...");
-			if(!control_estado){ 
-				UartSendString(UART_PC,"Fin de la carga");
+			//UartSendString(UART_PC,"Cargando\r\n");				
+		}else if (!control_OnOff){
+			if (control_estado==3){
+			UartSendString(UART_PC, "Apagado\r\n");
+			}else if(control_estado==0){ 
+				UartSendString(UART_PC,"Cebado :) \r\n");
 				control_estado=3;
-			}else if(control_estado){
-				UartSendString(UART_PC, "Apagado");
+			}else if(control_estado==1){
+				UartSendString(UART_PC, "Has retirado el recipiente\r\n");
 				control_estado=3;
-			}
-		} else if (!control_OnOff){
-			UartSendString(UART_PC, "Apagado");
 		}
 
-	vTaskDelay(CONFIG_BLINK_PERIOD / portTICK_PERIOD_MS);
+		vTaskDelay(CONFIG_BLINK_PERIOD / portTICK_PERIOD_MS);
 	
+		}
 	}
 }
 
@@ -150,7 +160,7 @@ static void controlDeDerrames_task (void *pvParameter) {
 
 
 
-            } else if (distancia<15){
+            } else if (distancia<20){
                 LedOff(LED_1);
                 LedOn(LED_2);
                 LedOn(LED_3);
@@ -170,10 +180,14 @@ static void controlDeDerrames_task (void *pvParameter) {
 				control_estado=1;
 				control_OnOff=0;
                 
-            }		
+            }
+		
+	
 	
 
-	}
+	}else if(!control_OnOff){
+				GPIOOn(gpio5v.pin);	//GPIO19 en cero
+		}	
 
     }
 }
@@ -199,7 +213,7 @@ void app_main(void){
 
 	serial_config_t my_uart={
 		.port=UART_PC,
-		.baud_rate = 9600,
+		.baud_rate = 19200,
 		.func_p= NULL, /* cambiar si decidimos que el encendido se haga por uart */
 		.param_p=NULL	
 	};
@@ -215,8 +229,8 @@ void app_main(void){
 	};
 	TimerInit(&timer_controlDeDerrames);
 
-	xTaskCreate(&controlDeDerrames_task, "", 4096, NULL, 5, &controlDeDerrames_task_handle);
-	xTaskCreate(&msjUART_task, "", 4096, NULL, 5, &UART_task_handle);
+	xTaskCreate(&controlDeDerrames_task, "", 8192, NULL, 5, &controlDeDerrames_task_handle);
+	xTaskCreate(&msjUART_task, "", 8192, NULL, 4, &UART_task_handle);
 
 	TimerStart(timer_controlDeDerrames.timer);
 
