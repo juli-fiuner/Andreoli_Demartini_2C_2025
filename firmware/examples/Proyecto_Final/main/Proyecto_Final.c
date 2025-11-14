@@ -45,7 +45,7 @@
 /** @def timerPeriod_us
 * @brief Periodo del timer en [us]
 */
-#define timerPeriod_us 1000000 
+#define timerPeriod_us 100000 
 
 /** @def distanciaGround_cm
 * @brief Distancia a la mesa desde la electroválvula en [cm]
@@ -104,58 +104,40 @@ static void controlDeDerrames_task (void *pvParameter) {
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
 		if (control_OnOff) {
-			printf("%d",control_OnOff);
+			UartSendString(UART_PC,"ctrl");
 
 			distancia=HcSr04ReadDistanceInCentimeters(); 
-		            if (distancia<10){
+			if (distancia<10){
                 LedsOffAll();
+				GPIOOff(gpio5v.pin);
 
             } else if (distancia<20){
                 LedOn(LED_1);
                 LedOff(LED_2);
                 LedOff(LED_3);
+				GPIOOn(gpio5v.pin);
+
 
             }else if(distancia<30){
                 LedOn(LED_1);
                 LedOn(LED_2);
                 LedOff(LED_3);
+				GPIOOn(gpio5v.pin);
+
 
             }else{
                 LedOn(LED_1);
                 LedOn(LED_2);
                 LedOn(LED_3);
+				GPIOOff(gpio5v.pin);	//GPIO19 en cero
                 
             }		
 	
 
-			if (distancia<=distanciaLimite_cm) {
-
-				GPIOOff(gpio5v.pin);
-				control_estado=0;
-
-			} else if (distancia>distanciaLimite_cm && distancia<distanciaGround_cm) {
-
-				GPIOOn(gpio5v.pin);
-            
-			} else if (distancia>=distanciaGround_cm) {
-
-				GPIOOff(gpio5v.pin);
-				control_estado=1;
-
-			}
-
-		} else if (!control_OnOff) {
-
-				GPIOOff(gpio5v.pin);	//GPIO19 en cero
-
-		}
-
-
-
 	}
 
     }
-
+}
 
 
 void leer_tecla1(){
@@ -179,8 +161,13 @@ void app_main(void){
 	xTaskCreate(&controlDeDerrames_task, "", 4096, NULL, 5, &controlDeDerrames_task_handle);
 
 
-
-
+	serial_config_t my_uart={
+		.port=UART_PC,
+		.baud_rate = 9600,
+		.func_p= NULL, /* cambiar si decidimos que el encendido se haga por uart */
+		.param_p=NULL	
+	};
+	UartInit(&my_uart);
 
     timer_config_t timer_controlDeDerrames = { 
 
