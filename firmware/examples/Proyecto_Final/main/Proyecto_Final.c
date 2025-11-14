@@ -112,8 +112,6 @@ uint16_t distancia;
 */
 led_t vector_LEDS[3]={LED_1, LED_2, LED_3}; //vector de led_t
 
-
-
 gpioConf_t gpio5v = {GPIO_19, 1};
 
 /*==================[internal functions declaration]=========================*/
@@ -170,6 +168,7 @@ static void msjUART_task(void *pvParameter){
 		}
 
 	vTaskDelay(CONFIG_BLINK_PERIOD / portTICK_PERIOD_MS);
+	
 	}
 }
 
@@ -178,19 +177,17 @@ static void mideDistancia_task(void *pvParameter){
 
 	while (1) {
 
-
 		if (control_OnOff) {
 
 			distancia=HcSr04ReadDistanceInCentimeters(); 
 		            if (distancia<10){
-                LedOff(LED_1);
-                LedOff(LED_2);
-                LedOff(LED_3);
+                LedsOffAll();
 
             } else if (distancia<20){
                 LedOn(LED_1);
                 LedOff(LED_2);
                 LedOff(LED_3);
+
             }else if(distancia<30){
                 LedOn(LED_1);
                 LedOn(LED_2);
@@ -201,9 +198,7 @@ static void mideDistancia_task(void *pvParameter){
                 LedOn(LED_2);
                 LedOn(LED_3);
                 
-            }
-
-		
+            }		
 	
 		vTaskDelay(CONFIG_BLINK_PERIOD / portTICK_PERIOD_MS);
 
@@ -251,7 +246,6 @@ static void controlDeDerrames_task (void *pvParameter) {
 
 void app_main(void){
 
-
 /*Para los mensajes de estado de la UART */
 	SwitchesInit();
 	SwitchActivInt(SWITCH_1, leer_tecla1, NULL); /* para el encendido/apagado */
@@ -263,18 +257,7 @@ void app_main(void){
 	};
 	UartInit(&my_uart);
 
-
-	HcSr04Init(GPIO_3, GPIO_2);
-	LedsInit();
-    GPIOInit(gpio5v.pin, gpio5v.dir);
-
-	xTaskCreate(&msjUART_task, "", 4096, NULL, 5, &UART_task_handle);
-	xTaskCreate(&mideDistancia_task, "", 4096, NULL, 5, &mideDistancia_task_handle);
-	xTaskCreate(&controlDeDerrames_task, "", 4096, NULL, 5, &controlDeDerrames_task_handle);
-
-
-
-	timer_config_t timer_controlDeDerrames = { 
+		timer_config_t timer_controlDeDerrames = { 
 
 		.timer = TIMER_A,
 		.period = timerPeriod_us,
@@ -282,13 +265,21 @@ void app_main(void){
 		.param_p = NULL,
 
 	};
+
+	HcSr04Init(GPIO_3, GPIO_2);
+	LedsInit();
+    GPIOInit(gpio5v.pin, gpio5v.dir);
 	TimerInit(&timer_controlDeDerrames);
 
+	//Creación de tareas
+
+	xTaskCreate(&msjUART_task, "", 4096, NULL, 5, &UART_task_handle);
+	xTaskCreate(&mideDistancia_task, "", 4096, NULL, 5, &mideDistancia_task_handle);
+	xTaskCreate(&controlDeDerrames_task, "", 4096, NULL, 5, &controlDeDerrames_task_handle);
+
+
+
 	TimerStart(timer_controlDeDerrames.timer);
-
-
-
-	
 
 }
 
