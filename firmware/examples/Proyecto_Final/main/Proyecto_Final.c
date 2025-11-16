@@ -1,6 +1,8 @@
 /*! @mainpage Proyecto Final de Andreoli Aguilar y Demartini
  *
  * @section genDesc General Description
+ * 
+ * Proyecto final de electrónica programable que consiste en un sistema automático de control de derrames para dispensadores de agua
  *
 
  *
@@ -40,6 +42,9 @@
 
 /*==================[macros and definitions]=================================*/
 
+/** @def CONFIG_BLINK_PERIOD
+* @brief Configuración del periodo del vTaskDelay
+*/
 #define CONFIG_BLINK_PERIOD 1000
 
 /** @def timerPeriod_us
@@ -82,7 +87,7 @@ uint8_t control_OnOff=0;
 
 /** @def uint8_t control_estado
  * @brief Variable que informa a la UART el estado de carga una vez encendido el sistema: 
- * si es 0 --> llegó al nivel deseado; si es 1 --> retirada abrupta. 
+ * si es 0 --> llegó al nivel deseado; si es 1 --> retirada abrupta; si es 3 --> sistema habilitado a cargar. 
  */
 uint8_t control_estado=3;
 
@@ -94,7 +99,7 @@ uint16_t distancia;
 /*==================[internal functions declaration]=========================*/
 
 /** @fn static void controlDeDerrames_task (void)
-* @brief Tarea que previene derrames por retirada abrupta del recipiente o rebalse
+* @brief Tarea que previene derrames por retirada abrupta del recipiente o rebalse. También indica cualitativamente con los LEDs el progreso del llenado.
 * @return void
 */
 static void controlDeDerrames_task (void *pvParameter);
@@ -102,13 +107,13 @@ static void controlDeDerrames_task (void *pvParameter);
 
 /** @fn static void mideDistancia_Task(void)
 * @brief Tarea que envía mensajes por UART, los posibles mensajes son: "apagado" 
-(al comienzo del programa, cuando se apaga manualmente o cuando detecta que se retira el recipiente), "cargando...", "fin de carga".
+(idle o cuando se apaga manualmente), "fin de carga" y "has retirado el recipiente"
 
-control_OnOff = 1, variable control 3 --> cargando
+control_OnOff = 1, variable control 3 --> cargando, no se envían mensajes
 
-control_OnOff = 1, variable control 0 --> fin de carga
+control_OnOff = 0, variable control 0 --> fin de carga
 
-control_OnOff = 1, variable control 1 --> has retirado el recipiente
+control_OnOff = 0, variable control 1 --> has retirado el recipiente
 
 control_OnOff = 0, apagado
 
@@ -127,7 +132,7 @@ static void msjUART_task(void *pvParameter){
 			if (control_estado==3){
 			UartSendString(UART_PC, "Apagado\r\n");
 			}else if(control_estado==0){ 
-				UartSendString(UART_PC,"Cebado :) \r\n");
+				UartSendString(UART_PC,"Fin de carga \r\n");
 				control_estado=3;
 			}else if(control_estado==1){
 				UartSendString(UART_PC, "Has retirado el recipiente\r\n");
