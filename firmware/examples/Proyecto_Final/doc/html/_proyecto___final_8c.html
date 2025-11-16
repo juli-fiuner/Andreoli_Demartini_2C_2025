@@ -1,0 +1,413 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.15.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Proyecto Final EP - Andreoli Aguilar, Demartini: Referencia del archivo C:/Users/demar/Desktop/Repositorios/Andreoli_Demartini_2C_2025/firmware/examples/Proyecto_Final/main/Proyecto_Final.c</title>
+<link rel="icon" href="icon.ico" type="image/x-icon" />
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+  $(function() { init_search(); });
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="fiuner.png"/></td>
+  <td id="projectalign">
+   <div id="projectname">Proyecto Final EP - Andreoli Aguilar, Demartini<span id="projectnumber">&#160;1.0</span>
+   </div>
+   <div id="projectbrief">Proyecto integrador final de electrónica programable</div>
+  </td>
+    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Buscar" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+</td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generado por Doxygen 1.15.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('_proyecto___final_8c.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Cargando...</div>
+<div class="SRStatus" id="Searching">Buscando...</div>
+<div class="SRStatus" id="NoMatches">Nada coincide</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Referencia del archivo Proyecto_Final.c</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
+<code>#include &lt;stdint.h&gt;</code><br />
+<code>#include &lt;string.h&gt;</code><br />
+<code>#include &quot;freertos/FreeRTOS.h&quot;</code><br />
+<code>#include &quot;freertos/task.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="switch_8h_source.html">switch.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="led_8h_source.html">led.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="gpio__mcu_8h_source.html">gpio_mcu.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="hc__sr04_8h_source.html">hc_sr04.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="uart__mcu_8h_source.html">uart_mcu.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="timer__mcu_8h_source.html">timer_mcu.h</a>&quot;</code><br />
+</div>
+<p><a href="_proyecto___final_8c_source.html">Ir al código fuente de este archivo.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Estructuras de datos</h2></td></tr>
+<tr class="memitem:gpioConf_5Ft" id="r_gpioConf_5Ft"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgpio_conf__t.html">gpioConf_t</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-define-members" class="groupheader"><a id="define-members" name="define-members"></a>
+defines</h2></td></tr>
+<tr class="memitem:a3df1b4cad09974bfc68858fad7cdc054" id="r_a3df1b4cad09974bfc68858fad7cdc054"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3df1b4cad09974bfc68858fad7cdc054">CONFIG_BLINK_PERIOD</a>&#160;&#160;&#160;1000</td></tr>
+<tr class="memdesc:a3df1b4cad09974bfc68858fad7cdc054"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuración del periodo del vTaskDelay.  <br /></td></tr>
+<tr class="memitem:a38add1ecd7085aadbb9bdaa4b2fcd3b3" id="r_a38add1ecd7085aadbb9bdaa4b2fcd3b3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a38add1ecd7085aadbb9bdaa4b2fcd3b3">timerPeriod_us</a>&#160;&#160;&#160;50000</td></tr>
+<tr class="memdesc:a38add1ecd7085aadbb9bdaa4b2fcd3b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Periodo del timer en [us].  <br /></td></tr>
+<tr class="memitem:ab9de635eaca2e586ff46266997b1e9e9" id="r_ab9de635eaca2e586ff46266997b1e9e9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab9de635eaca2e586ff46266997b1e9e9">distanciaGround_cm</a>&#160;&#160;&#160;30</td></tr>
+<tr class="memdesc:ab9de635eaca2e586ff46266997b1e9e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distancia a la mesa desde la electroválvula en [cm].  <br /></td></tr>
+<tr class="memitem:a99f26a5a5fd1157ba7429df4af7b3019" id="r_a99f26a5a5fd1157ba7429df4af7b3019"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a99f26a5a5fd1157ba7429df4af7b3019">distanciaLimite_cm</a>&#160;&#160;&#160;10</td></tr>
+<tr class="memdesc:a99f26a5a5fd1157ba7429df4af7b3019"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distancia al nivel de agua máximo en [cm].  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Funciones</h2></td></tr>
+<tr class="memitem:aa31139c15771ff00908b268bcb40d91b" id="r_aa31139c15771ff00908b268bcb40d91b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa31139c15771ff00908b268bcb40d91b">leer_tecla1</a> ()</td></tr>
+<tr class="memitem:a6da1e953827d0fa011f64cd76b92594e" id="r_a6da1e953827d0fa011f64cd76b92594e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6da1e953827d0fa011f64cd76b92594e">notifyControl</a> (void *param)</td></tr>
+<tr class="memitem:a630544a7f0a2cc40d8a7fefab7e2fe70" id="r_a630544a7f0a2cc40d8a7fefab7e2fe70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a630544a7f0a2cc40d8a7fefab7e2fe70">app_main</a> (void)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-var-members" class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:acdd8925c412750899c6a18387f89bb72" id="r_acdd8925c412750899c6a18387f89bb72"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structgpio_conf__t.html">gpioConf_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acdd8925c412750899c6a18387f89bb72">gpio5v</a> = {<a class="el" href="group___g_i_o_p.html#ggaf65604147d0244c9b13cfdc865ad5393aa2918c94bcf473e7ff31138b6333f847">GPIO_19</a>, 1}</td></tr>
+<tr class="memitem:ab96098ad4cee6d16175c175d207d45af" id="r_ab96098ad4cee6d16175c175d207d45af"><td class="memItemLeft" align="right" valign="top">TaskHandle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab96098ad4cee6d16175c175d207d45af">controlDeDerrames_task_handle</a> = <a class="el" href="ili9341_8c.html#a070d2ce7b6bb7e5c05602aa8c308d0c4">NULL</a></td></tr>
+<tr class="memitem:ade363997ababdbbcdab54a8cae2cf3a8" id="r_ade363997ababdbbcdab54a8cae2cf3a8"><td class="memItemLeft" align="right" valign="top">TaskHandle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ade363997ababdbbcdab54a8cae2cf3a8">UART_task_handle</a> = <a class="el" href="ili9341_8c.html#a070d2ce7b6bb7e5c05602aa8c308d0c4">NULL</a></td></tr>
+<tr class="memitem:a5853ff9252cfd9a2cb5b80fcc6981511" id="r_a5853ff9252cfd9a2cb5b80fcc6981511"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5853ff9252cfd9a2cb5b80fcc6981511">control_OnOff</a> =0</td></tr>
+<tr class="memitem:a6a2a08a53118663a26b5cd3212870847" id="r_a6a2a08a53118663a26b5cd3212870847"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6a2a08a53118663a26b5cd3212870847">control_estado</a> =3</td></tr>
+<tr class="memitem:aec40b15ff3098bdb2425eb4dc9c11a18" id="r_aec40b15ff3098bdb2425eb4dc9c11a18"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec40b15ff3098bdb2425eb4dc9c11a18">distancia</a></td></tr>
+</table>
+<a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Documentación de «define»</h2>
+<a id="a3df1b4cad09974bfc68858fad7cdc054" name="a3df1b4cad09974bfc68858fad7cdc054"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3df1b4cad09974bfc68858fad7cdc054">&#9670;&#160;</a></span>CONFIG_BLINK_PERIOD</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CONFIG_BLINK_PERIOD&#160;&#160;&#160;1000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configuración del periodo del vTaskDelay. </p>
+
+<p class="definition">Definición en la línea <a class="el" href="_proyecto___final_8c_source.html#l00048">48</a> del archivo <a class="el" href="_proyecto___final_8c_source.html">Proyecto_Final.c</a>.</p>
+
+</div>
+</div>
+<a id="ab9de635eaca2e586ff46266997b1e9e9" name="ab9de635eaca2e586ff46266997b1e9e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9de635eaca2e586ff46266997b1e9e9">&#9670;&#160;</a></span>distanciaGround_cm</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define distanciaGround_cm&#160;&#160;&#160;30</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Distancia a la mesa desde la electroválvula en [cm]. </p>
+
+<p class="definition">Definición en la línea <a class="el" href="_proyecto___final_8c_source.html#l00058">58</a> del archivo <a class="el" href="_proyecto___final_8c_source.html">Proyecto_Final.c</a>.</p>
+
+</div>
+</div>
+<a id="a99f26a5a5fd1157ba7429df4af7b3019" name="a99f26a5a5fd1157ba7429df4af7b3019"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99f26a5a5fd1157ba7429df4af7b3019">&#9670;&#160;</a></span>distanciaLimite_cm</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define distanciaLimite_cm&#160;&#160;&#160;10</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Distancia al nivel de agua máximo en [cm]. </p>
+
+<p class="definition">Definición en la línea <a class="el" href="_proyecto___final_8c_source.html#l00063">63</a> del archivo <a class="el" href="_proyecto___final_8c_source.html">Proyecto_Final.c</a>.</p>
+
+</div>
+</div>
+<a id="a38add1ecd7085aadbb9bdaa4b2fcd3b3" name="a38add1ecd7085aadbb9bdaa4b2fcd3b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38add1ecd7085aadbb9bdaa4b2fcd3b3">&#9670;&#160;</a></span>timerPeriod_us</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define timerPeriod_us&#160;&#160;&#160;50000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Periodo del timer en [us]. </p>
+
+<p class="definition">Definición en la línea <a class="el" href="_proyecto___final_8c_source.html#l00053">53</a> del archivo <a class="el" href="_proyecto___final_8c_source.html">Proyecto_Final.c</a>.</p>
+
+<p class="reference">Referenciado por <a class="el" href="_proyecto___final_8c_source.html#l00210">app_main()</a>.</p>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Documentación de funciones</h2>
+<a id="a630544a7f0a2cc40d8a7fefab7e2fe70" name="a630544a7f0a2cc40d8a7fefab7e2fe70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a630544a7f0a2cc40d8a7fefab7e2fe70">&#9670;&#160;</a></span>app_main()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void app_main </td>
+          <td>(</td>
+          <td class="paramtype">void</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definición en la línea <a class="el" href="_proyecto___final_8c_source.html#l00210">210</a> del archivo <a class="el" href="_proyecto___final_8c_source.html">Proyecto_Final.c</a>.</p>
+
+<p class="reference">Hace referencia a <a class="el" href="_proyecto___final_8c_source.html#l00076">controlDeDerrames_task_handle</a>, <a class="el" href="_proyecto___final_8c_source.html#l00071">gpio5v</a>, <a class="el" href="gpio__mcu_8h_source.html#l00054">GPIO_2</a>, <a class="el" href="gpio__mcu_8h_source.html#l00055">GPIO_3</a>, <a class="el" href="gpio__mcu_8c_source.html#l00067">GPIOInit()</a>, <a class="el" href="hc__sr04_8c_source.html#l00034">HcSr04Init()</a>, <a class="el" href="led_8c_source.html#l00031">LedsInit()</a>, <a class="el" href="_proyecto___final_8c_source.html#l00201">leer_tecla1()</a>, <a class="el" href="_proyecto___final_8c_source.html#l00205">notifyControl()</a>, <a class="el" href="ili9341_8c_source.html#l00019">NULL</a>, <a class="el" href="switch_8h_source.html#l00032">SWITCH_1</a>, <a class="el" href="switch_8c_source.html#l00047">SwitchActivInt()</a>, <a class="el" href="switch_8c_source.html#l00029">SwitchesInit()</a>, <a class="el" href="timer__mcu_8h_source.html#l00040">timer_config_t::timer</a>, <a class="el" href="timer__mcu_8h_source.html#l00032">TIMER_A</a>, <a class="el" href="timer__mcu_8c_source.html#l00067">TimerInit()</a>, <a class="el" href="_proyecto___final_8c_source.html#l00053">timerPeriod_us</a>, <a class="el" href="timer__mcu_8c_source.html#l00116">TimerStart()</a>, <a class="el" href="uart__mcu_8h_source.html#l00032">UART_PC</a>, <a class="el" href="_proyecto___final_8c_source.html#l00081">UART_task_handle</a> y <a class="el" href="uart__mcu_8c_source.html#l00107">UartInit()</a>.</p>
+
+</div>
+</div>
+<a id="aa31139c15771ff00908b268bcb40d91b" name="aa31139c15771ff00908b268bcb40d91b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa31139c15771ff00908b268bcb40d91b">&#9670;&#160;</a></span>leer_tecla1()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void leer_tecla1 </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definición en la línea <a class="el" href="_proyecto___final_8c_source.html#l00201">201</a> del archivo <a class="el" href="_proyecto___final_8c_source.html">Proyecto_Final.c</a>.</p>
+
+<p class="reference">Hace referencia a <a class="el" href="_proyecto___final_8c_source.html#l00086">control_OnOff</a>.</p>
+
+<p class="reference">Referenciado por <a class="el" href="_proyecto___final_8c_source.html#l00210">app_main()</a>.</p>
+
+</div>
+</div>
+<a id="a6da1e953827d0fa011f64cd76b92594e" name="a6da1e953827d0fa011f64cd76b92594e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6da1e953827d0fa011f64cd76b92594e">&#9670;&#160;</a></span>notifyControl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void notifyControl </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>param</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definición en la línea <a class="el" href="_proyecto___final_8c_source.html#l00205">205</a> del archivo <a class="el" href="_proyecto___final_8c_source.html">Proyecto_Final.c</a>.</p>
+
+<p class="reference">Hace referencia a <a class="el" href="_proyecto___final_8c_source.html#l00076">controlDeDerrames_task_handle</a>.</p>
+
+<p class="reference">Referenciado por <a class="el" href="_proyecto___final_8c_source.html#l00210">app_main()</a>.</p>
+
+</div>
+</div>
+<a name="doc-var-members" id="doc-var-members"></a><h2 id="header-doc-var-members" class="groupheader">Documentación de variables</h2>
+<a id="a6a2a08a53118663a26b5cd3212870847" name="a6a2a08a53118663a26b5cd3212870847"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a2a08a53118663a26b5cd3212870847">&#9670;&#160;</a></span>control_estado</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t control_estado =3</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definición en la línea <a class="el" href="_proyecto___final_8c_source.html#l00092">92</a> del archivo <a class="el" href="_proyecto___final_8c_source.html">Proyecto_Final.c</a>.</p>
+
+</div>
+</div>
+<a id="a5853ff9252cfd9a2cb5b80fcc6981511" name="a5853ff9252cfd9a2cb5b80fcc6981511"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5853ff9252cfd9a2cb5b80fcc6981511">&#9670;&#160;</a></span>control_OnOff</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t control_OnOff =0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definición en la línea <a class="el" href="_proyecto___final_8c_source.html#l00086">86</a> del archivo <a class="el" href="_proyecto___final_8c_source.html">Proyecto_Final.c</a>.</p>
+
+<p class="reference">Referenciado por <a class="el" href="_proyecto___final_8c_source.html#l00201">leer_tecla1()</a>.</p>
+
+</div>
+</div>
+<a id="ab96098ad4cee6d16175c175d207d45af" name="ab96098ad4cee6d16175c175d207d45af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab96098ad4cee6d16175c175d207d45af">&#9670;&#160;</a></span>controlDeDerrames_task_handle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TaskHandle_t controlDeDerrames_task_handle = <a class="el" href="ili9341_8c.html#a070d2ce7b6bb7e5c05602aa8c308d0c4">NULL</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definición en la línea <a class="el" href="_proyecto___final_8c_source.html#l00076">76</a> del archivo <a class="el" href="_proyecto___final_8c_source.html">Proyecto_Final.c</a>.</p>
+
+<p class="reference">Referenciado por <a class="el" href="_proyecto___final_8c_source.html#l00210">app_main()</a> y <a class="el" href="_proyecto___final_8c_source.html#l00205">notifyControl()</a>.</p>
+
+</div>
+</div>
+<a id="aec40b15ff3098bdb2425eb4dc9c11a18" name="aec40b15ff3098bdb2425eb4dc9c11a18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec40b15ff3098bdb2425eb4dc9c11a18">&#9670;&#160;</a></span>distancia</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t distancia</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definición en la línea <a class="el" href="_proyecto___final_8c_source.html#l00097">97</a> del archivo <a class="el" href="_proyecto___final_8c_source.html">Proyecto_Final.c</a>.</p>
+
+</div>
+</div>
+<a id="acdd8925c412750899c6a18387f89bb72" name="acdd8925c412750899c6a18387f89bb72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdd8925c412750899c6a18387f89bb72">&#9670;&#160;</a></span>gpio5v</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structgpio_conf__t.html">gpioConf_t</a> gpio5v = {<a class="el" href="group___g_i_o_p.html#ggaf65604147d0244c9b13cfdc865ad5393aa2918c94bcf473e7ff31138b6333f847">GPIO_19</a>, 1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definición en la línea <a class="el" href="_proyecto___final_8c_source.html#l00071">71</a> del archivo <a class="el" href="_proyecto___final_8c_source.html">Proyecto_Final.c</a>.</p>
+
+<p class="reference">Referenciado por <a class="el" href="_proyecto___final_8c_source.html#l00210">app_main()</a>.</p>
+
+</div>
+</div>
+<a id="ade363997ababdbbcdab54a8cae2cf3a8" name="ade363997ababdbbcdab54a8cae2cf3a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade363997ababdbbcdab54a8cae2cf3a8">&#9670;&#160;</a></span>UART_task_handle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TaskHandle_t UART_task_handle = <a class="el" href="ili9341_8c.html#a070d2ce7b6bb7e5c05602aa8c308d0c4">NULL</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definición en la línea <a class="el" href="_proyecto___final_8c_source.html#l00081">81</a> del archivo <a class="el" href="_proyecto___final_8c_source.html">Proyecto_Final.c</a>.</p>
+
+<p class="reference">Referenciado por <a class="el" href="_proyecto___final_8c_source.html#l00210">app_main()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_a652681666f018fba2dbd2787a28b7c7.html">Andreoli_Demartini_2C_2025</a></li><li class="navelem"><a href="dir_fd5ad7db1238af873bcdf44eb959ffe0.html">firmware</a></li><li class="navelem"><a href="dir_29d660f761e6136fa6d9b62b9166deac.html">examples</a></li><li class="navelem"><a href="dir_2f82199b00485a1b08f72c67d4ee25fe.html">Proyecto_Final</a></li><li class="navelem"><a href="dir_a1c0c348b6c66ad02de23417f5ea9ae0.html">main</a></li><li class="navelem"><a href="_proyecto___final_8c.html">Proyecto_Final.c</a></li>
+    <li class="footer">Generado por <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.15.0 </li>
+  </ul>
+</div>
+</body>
+</html>
